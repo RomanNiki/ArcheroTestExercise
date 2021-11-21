@@ -6,19 +6,11 @@ namespace Source.UI
     public class CoinsOnUI : MonoBehaviour
     {
         [SerializeField] private Text _textBox;
-        private void OnEnable()
+        [SerializeField] private string _template;
+        
+        public void DisplayCoins(int coins)
         {
-            CoinsCounter.Instance.OnCoinsAdd += CoinsDisplay;
-        }
-
-        private void OnDisable()
-        {
-            CoinsCounter.Instance.OnCoinsAdd -= CoinsDisplay;
-        }
-
-        private void CoinsDisplay(int coins)
-        {
-            _textBox.text = "Coins:    " + coins;
+            _textBox.text = string.Format(_template, coins);
         }
     }
 }

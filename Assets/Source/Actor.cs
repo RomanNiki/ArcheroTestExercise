@@ -2,6 +2,7 @@
 using Source.Interfaces;
 using Source.UI;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Source
 {
@@ -11,34 +12,29 @@ namespace Source
         [SerializeField] protected HealthBar _healthBar;
         protected float _maxHealth;
         protected bool Alive => _health > 0;
+        public UnityEvent OnDeath;
+        public event Action<float> HealthChangedEvent;
 
         protected virtual void Start()
         {
             _maxHealth = _health;
             _healthBar.Initialize(_health);
         }
-
-
-
-        public event Action OnDeath;
-
+        
         public virtual void ApplyDamage(float damage)
         {
             if (CanApplyDamage(damage))
             {
                 _health -= damage;
-                OnHealthChanged?.Invoke(Mathf.Clamp(_health, 0, _maxHealth));
+                HealthChangedEvent?.Invoke(Mathf.Clamp(_health, 0, _maxHealth));
             }
 
             if (!Alive) 
             { 
-                OnDeath?.Invoke();
+                OnDeath.Invoke();
                 Destroy(gameObject);
             }
         }
-
-        public event Action<float> OnHealthChanged;
-
         protected bool CanApplyDamage(float damage)
         {
             return Alive && damage > 0;

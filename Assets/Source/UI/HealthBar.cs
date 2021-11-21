@@ -10,12 +10,12 @@ namespace Source.UI
 
         private void OnEnable()
         {
-            _actor.OnHealthChanged += GetDamageUI;
+            _actor.HealthChangedEvent += GetDamage;
         }
 
         private void OnDisable()
         {
-            _actor.OnHealthChanged -= GetDamageUI;
+            _actor.HealthChangedEvent -= GetDamage;
         }
 
         public void Initialize(float maxHealth)
@@ -24,7 +24,7 @@ namespace Source.UI
             _healthBarSlider.value = maxHealth;
         }
 
-        private void GetDamageUI(float health)
+        private void GetDamage(float health)
         {
             _healthBarSlider.value = health;
         }

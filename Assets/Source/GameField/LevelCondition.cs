@@ -15,7 +15,6 @@ namespace Source.GameField
         [SerializeField] private float _pauseTime;
         [SerializeField] private GameObject[] _weapons;
         [SerializeField] private Vector3 _volume;
-        [SerializeField] private GameObject _uI;
         private List<GameObject> _enemies;
         private PlayerMechanics _playerMechanics;
         private bool levelClear;
@@ -24,10 +23,9 @@ namespace Source.GameField
         {
             _enemies = new List<GameObject>(_enemyCount);
             var player = Instantiate(_player, null);
-            SpawnEnemies(player);
-            _playerMechanics = player.GetComponent<PlayerMechanics>();
+            SpawnEnemies(player.transform.GetChild(1).gameObject);
+            _playerMechanics = player.GetComponentInChildren<PlayerMechanics>();
             _playerMechanics.Initialize(_enemies, _pauseTime, _weapons[0]);
-            Instantiate(_uI);
         }
 
         private void OnEnable()
@@ -63,6 +61,7 @@ namespace Source.GameField
         private void SpawnEnemies(GameObject player)
         {
             var listEnemy = new List<GameObject> {player};
+            var coinsCounter = player.GetComponent<CoinsCounter>();
             for (var i = 0; i < _enemyCount; i++)
             {
                 var randomSpawnPoint = _spawnPoints[Random.Range(0, _spawnPoints.Count)];
@@ -78,6 +77,7 @@ namespace Source.GameField
                 var position = new Vector3(x, y, z);
                 var enemy = Instantiate(enemyPrefab, position, Quaternion.identity);
                 enemy.GetComponent<BaseMechanics>().Initialize(listEnemy, _pauseTime, _weapons[0]);
+                enemy.GetComponent<EnemyBase>().OnDeath.AddListener(coinsCounter.AddCoins);
                 _enemies.Add(enemy);
             }
         }
