@@ -425,7 +425,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _health: 100
   _healthBar: {fileID: 9077651922622635505}
-  OnDeath:
+  _deathEvent:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &9116936473079696750
@@ -440,7 +440,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99484576cdd94008af306cbd313660ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OnCoinsAdd:
+  _coinsAddEvent:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 4406819071987845982}
@@ -579,7 +579,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _textBox: {fileID: 4406819071987845977}
-  _template: '=Coins: {0}'
+  _template: 'Coins: {0}'
 --- !u!1 &4406819071988566707
 GameObject:
   m_ObjectHideFlags: 0

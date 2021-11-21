@@ -171,7 +171,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _enemyCount: 5
-  _player: {fileID: 8906355085226110440, guid: ab7008b9757633141b46bc40bf318535, type: 3}
+  _player: {fileID: 9056496295557107, guid: 1cd30892eb76d004fbdf1465f5eb2e74, type: 3}
   _enemyPrefabs:
   - {fileID: 8679513803099972526, guid: d57bfaff5f043324f91df4f6cf183869, type: 3}
   - {fileID: 1229511071247171435, guid: 45053561f20e5b845845372e78eeb891, type: 3}
@@ -183,7 +183,6 @@ MonoBehaviour:
   - {fileID: 1750523467045461419, guid: 5030ac4443bf2f94baa0ebdffe9274d2, type: 3}
   - {fileID: 1750523467045461419, guid: 94bc1474d6cd67148855740e88bbdded, type: 3}
   _volume: {x: 3, y: 0, z: 3}
-  _uI: {fileID: 570160580183421156, guid: 8eebb253eeea4514c877cf74224ea61a, type: 3}
 --- !u!65 &24872303
 BoxCollider:
   m_ObjectHideFlags: 0

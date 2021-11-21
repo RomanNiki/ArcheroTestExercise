@@ -77,7 +77,7 @@ namespace Source.GameField
                 var position = new Vector3(x, y, z);
                 var enemy = Instantiate(enemyPrefab, position, Quaternion.identity);
                 enemy.GetComponent<BaseMechanics>().Initialize(listEnemy, _pauseTime, _weapons[0]);
-                enemy.GetComponent<EnemyBase>().OnDeath.AddListener(coinsCounter.AddCoins);
+                enemy.GetComponent<EnemyBase>()._deathEvent.AddListener(coinsCounter.AddCoins);
                 _enemies.Add(enemy);
             }
         }

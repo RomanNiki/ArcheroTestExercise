@@ -10,9 +10,9 @@ namespace Source
     {
         [SerializeField] protected float _health = 1f;
         [SerializeField] protected HealthBar _healthBar;
-        protected float _maxHealth;
-        protected bool Alive => _health > 0;
-        public UnityEvent OnDeath;
+        private float _maxHealth;
+        private bool Alive => _health > 0;
+        public UnityEvent _deathEvent;
         public event Action<float> HealthChangedEvent;
 
         protected virtual void Start()
@@ -20,7 +20,12 @@ namespace Source
             _maxHealth = _health;
             _healthBar.Initialize(_health);
         }
-        
+
+        private void OnDestroy()
+        {
+            _deathEvent.Invoke();
+        }
+
         public virtual void ApplyDamage(float damage)
         {
             if (CanApplyDamage(damage))
@@ -30,8 +35,7 @@ namespace Source
             }
 
             if (!Alive) 
-            { 
-                OnDeath.Invoke();
+            {
                 Destroy(gameObject);
             }
         }

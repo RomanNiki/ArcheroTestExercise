@@ -11,12 +11,12 @@ namespace Source.Mechanics
         [SerializeField] private float _playerRealizeRange;
         [SerializeField] private float _collisionDamage;
         private float _distance;
-        private IEnemy _thisEnemy;
         private GameObject _enemyGameObject;
-
+        private IEnemy _objectInterface;
+        
         public override void Initialize(List<GameObject> enemies, float pauseTime, GameObject weaponGameObject)
         {
-            _thisEnemy = transform.GetComponent<IEnemy>();
+            _objectInterface = transform.GetComponent<IEnemy>();
             base.Initialize(enemies, pauseTime, weaponGameObject);
             if (_meshAgent != null)
             {
@@ -32,7 +32,7 @@ namespace Source.Mechanics
             if (CanAtkState() && HaveEnemy())
             {
                 RotateToEnemy();
-                _weaponClass.Attack(_enemyGameObject.transform.position, _thisEnemy);
+                _weaponClass.Attack(_enemyGameObject.transform.position, _objectInterface);
             }
         }
 
@@ -48,7 +48,7 @@ namespace Source.Mechanics
         private void OnCollisionStay(Collision other)
         {
             var enemyCollision = other.transform.GetComponent<IPlayer>();
-            if (enemyCollision != null) Player.Instance.ApplyDamage(_collisionDamage);
+            if (enemyCollision != null) transform.GetComponent<EnemyBase>().ApplyDamage(_collisionDamage);
         }
 
         protected override bool CanAtkState()
@@ -66,6 +66,12 @@ namespace Source.Mechanics
                 if (hitInfo.transform.GetComponent<IPlayer>() == null)
                     return false;
             return _distance <= _attackRange;
+        }
+
+        public override Vector3 GetMoveDirection()
+        {
+            return new Vector3(transform.forward.x * _speed, _rigidbody.velocity.y,
+                transform.forward.z * _speed);
         }
 
         public override void Move(Vector3 direction)

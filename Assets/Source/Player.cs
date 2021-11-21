@@ -2,13 +2,20 @@
 
 namespace Source
 {
-    public class Player : Actor, IPlayer
+    public sealed class Player : Actor, IPlayer
     {
         public static Player Instance { get; private set; }
 
         private void Awake()
         {
-            Instance = this;
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else if (Instance == this)
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }
