@@ -1,38 +1,31 @@
-﻿using System.Collections.Generic;
+﻿using Source.Interfaces;
 using Source.Mechanics;
-using UnityEngine;
 
 namespace Source.MovementStates
 {
     public class BattleState : State
     {
-        protected List<GameObject> _enemies;
+        protected IAttack _attack;
 
-        public BattleState(BaseMechanics character, MovementStateMachine movementStateMachine, List<GameObject> enemies)
+        public BattleState(BaseMechanics character, MovementStateMachine movementStateMachine, IAttack attack)
             : base(character, movementStateMachine)
         {
-            _enemies = enemies;
+            _attack = attack;
         }
 
         public override void LogicUpdate()
         {
             base.LogicUpdate();
-            if (_enemies.Count == 0) _movementStateMachine.ChangeState(_character.IdleState);
+            if (_attack.HasEnemy() == false) _movementStateMachine.ChangeState(_character.IdleState);
             if (_character.GetMoveDirection().sqrMagnitude > 0f ||
                 _character.CanAttack == false && _character is EnemyBaseMechanics)
                 _movementStateMachine.ChangeState(_character.MoveState);
         }
 
-        public override void Enter()
-        {
-            base.Enter();
-            _character.RotateToEnemy();
-        }
-
         public override void PhysicsUpdate()
         {
             base.PhysicsUpdate();
-            _character.TryOpenFire();
+            _attack.TryOpenFire();
         }
     }
 }

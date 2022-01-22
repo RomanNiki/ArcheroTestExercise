@@ -24,8 +24,7 @@ namespace Source.Weapon
                 case IEnemy _ when other.transform.GetComponent<IEnemy>() != null:
                     return;
             }
-
-
+            
             if (other.transform.TryGetComponent<IDamageable>(out var component)) component.ApplyDamage(_damage);
 
             if (other.transform.GetComponent<Bullet>() != null) return;

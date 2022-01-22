@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Source.Interfaces;
 using UnityEngine;
 
@@ -7,65 +8,60 @@ namespace Source.Mechanics
     public class PlayerMechanics : BaseMechanics
     {
         [SerializeField] private DynamicJoystick _joystick;
-        private bool _canAttack;
-        private GameObject _lastClosestEnemy;
+        private Transform _lastClosestEnemy;
         private float _targetDistance = 100f;
         public event Action<bool> HaveNoEnemy;
-        
+
         public sealed override Vector3 GetMoveDirection()
         {
-            if ( _joystick == null)
+            if (_joystick == null)
             {
                 _joystick = FindObjectOfType<DynamicJoystick>();
             }
+
             return new Vector3(_joystick.Horizontal, 0, _joystick.Vertical);
         }
 
-        public override void TryOpenFire()
+        protected override void InitAttack(List<Transform> enemies, Weapon.Weapon weapon)
         {
-            if (_enemies.Count == 0) return;
-            FindClosestEnemy();
-
-            if (_canAttack)
-            {
-                RotateToEnemy();
-                _weaponClass.Attack(_lastClosestEnemy.transform.position, Player.Instance);
-            }
+            _attack = new PlayerAttack();
+            _attack.Initialize(enemies, this, weapon);
         }
 
-        public override void RotateToEnemy()
+        protected override void InitAttack(PlayerMechanics player, Weapon.Weapon weapon)
         {
-            var direction = Vector3.forward;
-            if (_lastClosestEnemy != null) direction = _lastClosestEnemy.transform.position - transform.position;
-            direction.y = 0f;
-            _rigidbody.MoveRotation(Quaternion.LookRotation(direction));
+            throw new NotImplementedException();
         }
 
-        private void FindClosestEnemy()
+        public Transform FindClosestEnemy(out bool canAttack, ref List<Transform> enemies)
         {
-            _canAttack = false;
-            foreach (var enemy in _enemies)
+            canAttack = false;
+            foreach (var enemy in enemies)
             {
                 if (enemy == null)
                 {
-                    _enemies.Remove(enemy);
-                    if (!HaveEnemy()) HaveNoEnemy?.Invoke(true);
-                    return;
+                    enemies.Remove(enemy);
+                    if (!_attack.HasEnemy()) HaveNoEnemy?.Invoke(true);
+                    return null;
                 }
 
-                var currentDistance = Vector3.Distance(transform.position, enemy.transform.position);
-                var ray = new Ray(_weaponPlace.position, enemy.transform.position - _weaponPlace.position);
+                var enemyPosition = enemy.transform.position;
+                var weaponPlacePosition = _weaponPlace.position;
+                var currentDistance = Vector3.Distance(transform.position, enemyPosition);
+                var direction = enemyPosition - weaponPlacePosition;
+                var ray = new Ray(weaponPlacePosition, direction);
                 if (Physics.Raycast(ray, out var hitInfo, 100f, _layerMask))
-                    if (hitInfo.transform.TryGetComponent<IEnemy>(out var component))
+                    if (hitInfo.transform.TryGetComponent<IEnemy>(out _))
                         if (currentDistance <= _targetDistance && currentDistance <= _attackRange)
                         {
                             _targetDistance = currentDistance;
                             _lastClosestEnemy = enemy;
-                            _canAttack = true;
+                            canAttack = true;
                         }
             }
 
             _targetDistance = 100f;
+            return _lastClosestEnemy;
         }
     }
 }

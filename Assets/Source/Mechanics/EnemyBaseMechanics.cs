@@ -11,54 +11,47 @@ namespace Source.Mechanics
         [SerializeField] private float _playerRealizeRange;
         [SerializeField] private float _collisionDamage;
         private float _distance;
-        private IEnemy _thisEnemy;
-        private GameObject _enemyGameObject;
+        private Transform _playerTransform;
 
-        public override void Initialize(List<GameObject> enemies, float pauseTime, GameObject weaponGameObject)
+        public override void Initialize(PlayerMechanics player, float pauseTime, Weapon.Weapon weaponGameObject)
         {
-            _thisEnemy = transform.GetComponent<IEnemy>();
-            base.Initialize(enemies, pauseTime, weaponGameObject);
+           
+            base.Initialize(player, pauseTime, weaponGameObject);
             if (_meshAgent != null)
             {
                 _meshAgent.speed = _speed;
                 _meshAgent.stoppingDistance = _attackRange;
             }
 
-            _enemyGameObject = _enemies[0];
+            _playerTransform = player.transform;
         }
 
-        public override void TryOpenFire()
+        protected override void InitAttack(List<Transform> enemies, Weapon.Weapon weapon)
         {
-            if (CanAtkState() && HaveEnemy())
-            {
-                RotateToEnemy();
-                _weaponClass.Attack(_enemyGameObject.transform.position, _thisEnemy);
-            }
+            throw new System.NotImplementedException();
         }
 
-        public override void RotateToEnemy()
+        protected override void InitAttack(PlayerMechanics player, Weapon.Weapon weapon)
         {
-            if (_enemyGameObject != null)
-            {
-                var rot = new Vector3(_enemyGameObject.transform.position.x, transform.position.y,
-                    _enemyGameObject.transform.position.z);
-                transform.LookAt(rot);
-            }
+            _attack = new EnemyAttack();
+            _attack.Initialize(player, this, weapon);
         }
+
+
         private void OnCollisionStay(Collision other)
         {
             var enemyCollision = other.transform.GetComponent<IPlayer>();
             if (enemyCollision != null) Player.Instance.ApplyDamage(_collisionDamage);
         }
 
-        protected override bool CanAtkState()
+        public override bool CanAtkState()
         {
-            if (_enemyGameObject == null) return false;
-            var targetDir = _enemyGameObject.transform.position - _weaponPlace.position;
-            Physics.Raycast(_weaponPlace.position, targetDir,
+            if (_playerTransform == null) return false;
+            var weaponPlacePosition = _weaponPlace.position;
+            var targetDir = _playerTransform.position - weaponPlacePosition;
+            Physics.Raycast(weaponPlacePosition, targetDir,
                 out var hit, _attackRange, _layerMask);
-            _distance = Vector3.Distance(_enemyGameObject.transform.position, transform.position);
-
+            _distance = Vector3.Distance(_playerTransform.position, transform.position);
 
             if (hit.transform == null) return false;
 
@@ -70,15 +63,17 @@ namespace Source.Mechanics
 
         public override void Move(Vector3 direction)
         {
-            if (_enemyGameObject == null) return;
+            if (_playerTransform == null) return;
 
             if (CanAtkState() == false)
             {
                 if (_meshAgent == null) return;
+                var dir = transform.position - Vector3.forward;
+                transform.LookAt(_playerTransform.position);
                 if (_distance > _playerRealizeRange)
-                    _meshAgent.SetDestination(transform.position - Vector3.forward * 5f);
+                    _meshAgent.SetDestination(dir * 5f);
                 else
-                    _meshAgent.SetDestination(_enemyGameObject.transform.position);
+                    _meshAgent.SetDestination(_playerTransform.position);
             }
         }
     }

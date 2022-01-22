@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Source.Interfaces;
 using Source.MovementStates;
 using UnityEngine;
 
@@ -15,7 +16,7 @@ namespace Source.Mechanics
         [SerializeField] protected float _attackSpeed;
         [SerializeField] protected LayerMask _layerMask;
         [SerializeField] protected float _attackRange;
-        protected List<GameObject> _enemies;
+        protected IAttack _attack;
         private MovementStateMachine _movementStateMachine;
         private bool _pause = true;
         public MoveState MoveState { get; private set; }
@@ -37,18 +38,34 @@ namespace Source.Mechanics
             _movementStateMachine.GetCurrentMovementState.PhysicsUpdate();
         }
 
-        public virtual void Initialize(List<GameObject> enemies, float pauseTime, GameObject weaponGameObject)
+        public virtual void Initialize(List<Transform> enemies, float pauseTime, Weapon.Weapon weaponGameObject)
         {
-            if (enemies != null) _enemies = enemies;
-            _weaponClass = Instantiate(weaponGameObject, _weaponPlace.position, _weaponPlace.rotation, _weaponPlace)
-                .GetComponent<Weapon.Weapon>();
+            _weaponClass = Instantiate(weaponGameObject, _weaponPlace.position, _weaponPlace.rotation, _weaponPlace);
             _weaponClass.Setup(_attackSpeed);
+            InitAttack(enemies, _weaponClass);
+            InitMoveStateMachine();
+            StartCoroutine(WaitForPause(pauseTime));
+        }
+
+        public virtual void Initialize(PlayerMechanics player, float pauseTime, Weapon.Weapon weaponGameObject)
+        {
+            _weaponClass = Instantiate(weaponGameObject, _weaponPlace.position, _weaponPlace.rotation, _weaponPlace);
+            _weaponClass.Setup(_attackSpeed);
+            InitAttack(player, _weaponClass);
+            InitMoveStateMachine();
+            StartCoroutine(WaitForPause(pauseTime));
+        }
+
+        protected abstract void InitAttack(List<Transform> enemies, Weapon.Weapon weapon);
+        protected abstract void InitAttack(PlayerMechanics player, Weapon.Weapon weapon);
+
+        private void InitMoveStateMachine()
+        {
             _movementStateMachine = new MovementStateMachine();
             MoveState = new MoveState(this, _movementStateMachine);
-            IdleState = new IdleState(this, _movementStateMachine);
-            BattleState = new BattleState(this, _movementStateMachine, _enemies);
+            IdleState = new IdleState(this, _movementStateMachine, _attack);
+            BattleState = new BattleState(this, _movementStateMachine, _attack);
             _movementStateMachine.Initialize(IdleState);
-            StartCoroutine(WaitForPause(pauseTime));
         }
 
         private IEnumerator WaitForPause(float time)
@@ -62,18 +79,7 @@ namespace Source.Mechanics
             return new Vector3();
         }
 
-        public abstract void TryOpenFire();
-
-        public virtual bool HaveEnemy()
-        {
-            return _enemies.Count > 0;
-        }
-
-        public virtual void RotateToEnemy()
-        {
-        }
-
-        protected virtual bool CanAtkState()
+        public virtual bool CanAtkState()
         {
             return false;
         }

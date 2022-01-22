@@ -15,6 +15,7 @@ namespace Source.Weapon
             lastBullet.transform.LookAt(enemyPos);
             lastBullet.GetComponent<Bullet>().Setup(enemyPos - _startPositionTransform.position, source);
             _nextShootTime = Time.fixedTime + 1f / _attackSpeed;
+            Debug.Log("OpenFIre");
         }
     }
 }

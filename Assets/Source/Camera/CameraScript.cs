@@ -4,22 +4,49 @@ namespace Source.Camera
 {
     public class CameraScript : MonoBehaviour
     {
-        [SerializeField] private Transform _field;
+        [SerializeField] private Vector2 _defaultResolution = new Vector2(1280, 720);
+        [Range(0f, 1f)] [SerializeField] private float _widthOrHeight;
+
+        private UnityEngine.Camera componentCamera;
+
+        private float initialSize;
+        private float targetAspect;
+
+        private float initialFov;
+        private float horizontalFov = 120f;
 
         private void Start()
         {
-            var screenRatio = Screen.width / (float) Screen.height;
-            var targetRatio = _field.transform.lossyScale.x / _field.transform.lossyScale.y;
+            componentCamera = GetComponent<UnityEngine.Camera>();
+            initialSize = componentCamera.orthographicSize;
 
-            if (screenRatio >= targetRatio)
+            targetAspect = _defaultResolution.x / _defaultResolution.y;
+
+            initialFov = componentCamera.fieldOfView;
+            horizontalFov = CalcVerticalFov(initialFov, 1 / targetAspect);
+        }
+
+        private void Update()
+        {
+            if (componentCamera.orthographic)
             {
-                UnityEngine.Camera.main.orthographicSize = _field.transform.lossyScale.y / 2;
+                float constantWidthSize = initialSize * (targetAspect / componentCamera.aspect);
+                componentCamera.orthographicSize = Mathf.Lerp(constantWidthSize, initialSize, _widthOrHeight);
             }
             else
             {
-                var differenceInSize = targetRatio / screenRatio;
-                UnityEngine.Camera.main.orthographicSize = _field.transform.lossyScale.y / 2 * differenceInSize;
+                float constantWidthFov = CalcVerticalFov(horizontalFov, componentCamera.aspect);
+                componentCamera.fieldOfView = Mathf.Lerp(constantWidthFov, initialFov, _widthOrHeight);
             }
+        }
+
+        private float CalcVerticalFov(float hFovInDeg, float aspectRatio)
+        {
+            float hFovInRads = hFovInDeg * Mathf.Deg2Rad;
+
+            float vFovInRads = 2 * Mathf.Atan(Mathf.Tan(hFovInRads / 2) / aspectRatio);
+
+            return vFovInRads * Mathf.Rad2Deg;
         }
     }
 }

@@ -559,7 +559,6 @@ MonoBehaviour:
     m_Bits: 65
   _attackRange: 10
   _joystick: {fileID: 0}
-  _collisionDamage: 3
 --- !u!114 &8906355085226110434
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -572,7 +571,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd1c8a947a494e968999bbd1076b61e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _health: 100
+  _health: 10000
   _healthBar: {fileID: 2789187836272774394}
 --- !u!114 &-6500173448499258267
 MonoBehaviour:

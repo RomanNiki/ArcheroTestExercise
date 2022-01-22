@@ -9,23 +9,22 @@ namespace Source.GameField
     public class LevelCondition : MonoBehaviour
     {
         [SerializeField] private int _enemyCount;
-        [SerializeField] private GameObject _player;
-        [SerializeField] private List<GameObject> _enemyPrefabs;
+        [SerializeField] private PlayerMechanics _player;
+        [SerializeField] private List<EnemyBaseMechanics> _enemyPrefabs;
         [SerializeField] private List<Transform> _spawnPoints;
         [SerializeField] private float _pauseTime;
-        [SerializeField] private GameObject[] _weapons;
+        [SerializeField] private Weapon.Weapon[] _weapons;
         [SerializeField] private Vector3 _volume;
         [SerializeField] private GameObject _uI;
-        private List<GameObject> _enemies;
+        private List<Transform> _enemies;
         private PlayerMechanics _playerMechanics;
         private bool levelClear;
 
         private void Awake()
         {
-            _enemies = new List<GameObject>(_enemyCount);
-            var player = Instantiate(_player, null);
-            SpawnEnemies(player);
-            _playerMechanics = player.GetComponent<PlayerMechanics>();
+            _enemies = new List<Transform>(_enemyCount);
+            _playerMechanics = Instantiate(_player, null);
+            SpawnEnemies(_playerMechanics);
             _playerMechanics.Initialize(_enemies, _pauseTime, _weapons[0]);
             Instantiate(_uI);
         }
@@ -60,9 +59,8 @@ namespace Source.GameField
             Application.Quit();
         }
 
-        private void SpawnEnemies(GameObject player)
+        private void SpawnEnemies(PlayerMechanics player)
         {
-            var listEnemy = new List<GameObject> {player};
             for (var i = 0; i < _enemyCount; i++)
             {
                 var randomSpawnPoint = _spawnPoints[Random.Range(0, _spawnPoints.Count)];
@@ -77,8 +75,8 @@ namespace Source.GameField
                     position1.z + _volume.z);
                 var position = new Vector3(x, y, z);
                 var enemy = Instantiate(enemyPrefab, position, Quaternion.identity);
-                enemy.GetComponent<BaseMechanics>().Initialize(listEnemy, _pauseTime, _weapons[0]);
-                _enemies.Add(enemy);
+                enemy.Initialize(player, _pauseTime, _weapons[0]);
+                _enemies.Add(enemy.transform);
             }
         }
     }

@@ -18,8 +18,6 @@ namespace Source
             _healthBar.Initialize(_health);
         }
 
-
-
         public event Action OnDeath;
 
         public virtual void ApplyDamage(float damage)
