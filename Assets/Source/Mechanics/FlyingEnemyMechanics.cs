@@ -8,7 +8,7 @@ namespace Source.Mechanics
         {
             if (CanAttack == false && Player.Instance != null)
             {
-                _attack.RotateToEnemy();
+                Attack.RotateToEnemy();
                 _rigidbody.velocity = new Vector3(transform.forward.x * _speed, _rigidbody.velocity.y,
                     transform.forward.z * _speed);
             }

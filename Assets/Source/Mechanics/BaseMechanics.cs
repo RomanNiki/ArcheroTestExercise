@@ -16,12 +16,12 @@ namespace Source.Mechanics
         [SerializeField] protected float _attackSpeed;
         [SerializeField] protected LayerMask _layerMask;
         [SerializeField] protected float _attackRange;
-        protected IAttack _attack;
         private MovementStateMachine _movementStateMachine;
         private bool _pause = true;
         public MoveState MoveState { get; private set; }
         public IdleState IdleState { get; private set; }
         public BattleState BattleState { get; private set; }
+        public IAttack Attack { get; protected set; }
 
         public bool CanAttack => CanAtkState();
 
@@ -63,8 +63,8 @@ namespace Source.Mechanics
         {
             _movementStateMachine = new MovementStateMachine();
             MoveState = new MoveState(this, _movementStateMachine);
-            IdleState = new IdleState(this, _movementStateMachine, _attack);
-            BattleState = new BattleState(this, _movementStateMachine, _attack);
+            IdleState = new IdleState(this, _movementStateMachine);
+            BattleState = new BattleState(this, _movementStateMachine);
             _movementStateMachine.Initialize(IdleState);
         }
 

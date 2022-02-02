@@ -24,8 +24,8 @@ namespace Source.Mechanics
 
         protected override void InitAttack(List<Transform> enemies, Weapon.Weapon weapon)
         {
-            _attack = new PlayerAttack();
-            _attack.Initialize(enemies, this, weapon);
+            Attack = new PlayerAttack();
+            Attack.Initialize(enemies, this, weapon);
         }
 
         protected override void InitAttack(PlayerMechanics player, Weapon.Weapon weapon)
@@ -41,7 +41,7 @@ namespace Source.Mechanics
                 if (enemy == null)
                 {
                     enemies.Remove(enemy);
-                    if (!_attack.HasEnemy()) HaveNoEnemy?.Invoke(true);
+                    if (!Attack.HasEnemy()) HaveNoEnemy?.Invoke(true);
                     return null;
                 }
 
@@ -50,14 +50,13 @@ namespace Source.Mechanics
                 var currentDistance = Vector3.Distance(transform.position, enemyPosition);
                 var direction = enemyPosition - weaponPlacePosition;
                 var ray = new Ray(weaponPlacePosition, direction);
-                if (Physics.Raycast(ray, out var hitInfo, 100f, _layerMask))
-                    if (hitInfo.transform.TryGetComponent<IEnemy>(out _))
-                        if (currentDistance <= _targetDistance && currentDistance <= _attackRange)
-                        {
-                            _targetDistance = currentDistance;
-                            _lastClosestEnemy = enemy;
-                            canAttack = true;
-                        }
+                if (Physics.Raycast(ray, out var hitInfo, 100f, _layerMask) == false) continue;
+                if (hitInfo.transform.TryGetComponent<IEnemy>(out _) == false) continue;
+                if ((currentDistance <= _targetDistance) == false ||
+                    (currentDistance <= _attackRange) == false) continue;
+                _targetDistance = currentDistance;
+                _lastClosestEnemy = enemy;
+                canAttack = true;
             }
 
             _targetDistance = 100f;

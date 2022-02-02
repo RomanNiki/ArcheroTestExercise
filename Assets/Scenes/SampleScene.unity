@@ -167,22 +167,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 24872299}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b3ada8614b841b1ba6268fabc3272b0, type: 3}
+  m_Script: {fileID: 11500000, guid: cc0631b7704d44ee981e2042c854a480, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _enemyCount: 5
-  _player: {fileID: 8906355085226110435, guid: ab7008b9757633141b46bc40bf318535, type: 3}
-  _enemyPrefabs:
-  - {fileID: -7417644851613095843, guid: d57bfaff5f043324f91df4f6cf183869, type: 3}
-  - {fileID: -315374957521351454, guid: 45053561f20e5b845845372e78eeb891, type: 3}
-  _spawnPoints:
-  - {fileID: 1123466846}
-  - {fileID: 1209180222}
-  _pauseTime: 3
-  _weapons:
-  - {fileID: 7841914921206369983, guid: 5030ac4443bf2f94baa0ebdffe9274d2, type: 3}
-  _volume: {x: 3, y: 0, z: 3}
-  _uI: {fileID: 570160580183421156, guid: 8eebb253eeea4514c877cf74224ea61a, type: 3}
+  _levelCondition: {fileID: 1877766496}
 --- !u!65 &24872303
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1587,6 +1575,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1877766495}
   - component: {fileID: 1877766494}
+  - component: {fileID: 1877766496}
   m_Layer: 0
   m_Name: GameField
   m_TagString: Untagged
@@ -1630,6 +1619,33 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1877766496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1877766493}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b3ada8614b841b1ba6268fabc3272b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _enemyCount: 5
+  _player: {fileID: 8906355085226110435, guid: ab7008b9757633141b46bc40bf318535, type: 3}
+  _enemyPrefabs:
+  - {fileID: -3046955314313128862, guid: 0d1c2b19d8822ec47a0a95c371a22ff1, type: 3}
+  - {fileID: -315374957521351454, guid: 45053561f20e5b845845372e78eeb891, type: 3}
+  _spawnPoints:
+  - {fileID: 1123466846}
+  - {fileID: 1209180222}
+  _pauseTime: 3
+  _weapons:
+  - {fileID: 7841914921206369983, guid: 5030ac4443bf2f94baa0ebdffe9274d2, type: 3}
+  _volume: {x: 3, y: 0, z: 3}
+  _uI: {fileID: 570160580183421156, guid: 8eebb253eeea4514c877cf74224ea61a, type: 3}
+  _surface: {fileID: 1022502451}
+  _ignoreNavmeshAgent: 0
 --- !u!1 &2134324445
 GameObject:
   m_ObjectHideFlags: 0

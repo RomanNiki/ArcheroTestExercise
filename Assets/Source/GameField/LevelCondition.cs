@@ -1,8 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Source.Interfaces;
 using Source.Mechanics;
 using UnityEngine;
+using UnityEngine.AI;
+using Random = UnityEngine.Random;
 
 namespace Source.GameField
 {
@@ -16,12 +17,15 @@ namespace Source.GameField
         [SerializeField] private Weapon.Weapon[] _weapons;
         [SerializeField] private Vector3 _volume;
         [SerializeField] private GameObject _uI;
+        [SerializeField] private NavMeshSurface _surface;
+        [SerializeField] private bool _ignoreNavmeshAgent;
         private List<Transform> _enemies;
         private PlayerMechanics _playerMechanics;
-        private bool levelClear;
+        public bool LevelClear { get; private set; }
 
         private void Awake()
         {
+            _surface.ignoreNavMeshAgent = _ignoreNavmeshAgent;
             _enemies = new List<Transform>(_enemyCount);
             _playerMechanics = Instantiate(_player, null);
             SpawnEnemies(_playerMechanics);
@@ -38,46 +42,36 @@ namespace Source.GameField
         {
             _playerMechanics.HaveNoEnemy -= ChangeLevelStatus;
         }
-
-        private void OnCollisionEnter(Collision other)
-        {
-            if (levelClear && other.gameObject.GetComponent<IPlayer>() != null) 
-                Quite();
-        }
-
+        
         private void ChangeLevelStatus(bool value)
         {
-            levelClear = value;
+            LevelClear = value;
         }
         
-        private static void Quite()
-        {
-            if (UnityEditor.EditorApplication.isPlaying)
-            {
-                UnityEditor.EditorApplication.isPlaying = false;
-            }
-            Application.Quit();
-        }
-
         private void SpawnEnemies(PlayerMechanics player)
         {
             for (var i = 0; i < _enemyCount; i++)
             {
-                var randomSpawnPoint = _spawnPoints[Random.Range(0, _spawnPoints.Count)];
-                var position1 = randomSpawnPoint.position;
                 var enemyPrefab = _enemyPrefabs[Random.Range(0, _enemyPrefabs.Count)];
-                var x = Random.Range(position1.x - _volume.x,
-                    position1.x + _volume.x);
-                var yHeight = enemyPrefab.transform.position.y;
-                var y = Random.Range(position1.y - _volume.y + yHeight,
-                    position1.y + _volume.y + yHeight);
-                var z = Random.Range(position1.z - _volume.z,
-                    position1.z + _volume.z);
-                var position = new Vector3(x, y, z);
+                var randomSpawnPoint = _spawnPoints[Random.Range(0, _spawnPoints.Count)];
+                var spawnPosition = randomSpawnPoint.position;
+                var position = TakeRandomPosition(spawnPosition, enemyPrefab.transform.position.y);
                 var enemy = Instantiate(enemyPrefab, position, Quaternion.identity);
                 enemy.Initialize(player, _pauseTime, _weapons[0]);
                 _enemies.Add(enemy.transform);
             }
+        }
+
+        private Vector3 TakeRandomPosition(Vector3 spawnPosition, float yHeight)
+        {
+            var x = Random.Range(spawnPosition.x - _volume.x,
+                spawnPosition.x + _volume.x);
+            var y = Random.Range(spawnPosition.y - _volume.y + yHeight,
+                spawnPosition.y + _volume.y + yHeight);
+            var z = Random.Range(spawnPosition.z - _volume.z,
+                spawnPosition.z + _volume.z);
+            var position = new Vector3(x, y, z);
+            return position;
         }
     }
 }
